@@ -1,17 +1,12 @@
-import dbConnect from "./config/db.js"
-import { User } from "./models/db.js"
+import express from "express"
+import router from "./routes/index.js";
+import dbConnect from "./config/db.js";
+
+const app = express();
+app.use(express.json());
 
 await dbConnect();
-try{
-    const res = await User.create({
-        "username": "Bhumesh",
-        "email": "Bhumeshmahajan@gmail.com",
-        "password": "1234@Bhu",
-        "firstName": "BHumesh ",
-        "lastName": "Mahajan "
-    });
-    console.log(res);
-}
-catch(err){
-    console.log("ERROR CREATING USER", err);
-}
+app.use("/api/v1", router);
+app.listen(3000, ()=>{
+    console.log("Server is Running at Port 3000");
+})
