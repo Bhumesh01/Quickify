@@ -63,7 +63,7 @@ userRouter.post("/signup", async (req:Request, res:Response)=>{
             ]
         })
         if(exists){
-            return res.status(409).json({ message: "User already exists" });
+            return res.status(409).json({ message: "Email already taken/Incorrect inputs" });
         }
         await User.create({
             username: username,
