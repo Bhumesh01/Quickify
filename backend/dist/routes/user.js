@@ -1,8 +1,10 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import { User } from "../models/db.js";
-import z from "zod";
+import z, { string } from "zod";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import authMiddleware from "../middleware/middleware.js";
 import dotenv from "dotenv";
 dotenv.config();
 export const userRouter = Router();
@@ -24,6 +26,7 @@ const signupSchema = baseZodSchema.superRefine((data, ctx) => {
     }
 });
 const signinSchema = baseZodSchema.omit({ confirmedPassword: true, lastName: true, firstName: true });
+const updateSchema = baseZodSchema.partial();
 //SignUp Endpoint
 userRouter.post("/signup", async (req, res) => {
     try {
@@ -59,7 +62,7 @@ userRouter.post("/signup", async (req, res) => {
             ]
         });
         if (exists) {
-            return res.status(409).json({ message: "User already exists" });
+            return res.status(409).json({ message: "Email already taken/Incorrect inputs" });
         }
         await User.create({
             username: username,
@@ -106,6 +109,46 @@ userRouter.post("/signin", async (req, res) => {
         console.log(err);
         return res.status(411).json({
             "message": "Error while Logging In"
+        });
+    }
+});
+userRouter.use(authMiddleware);
+userRouter.patch("/", async (req, res) => {
+    try {
+        const { success, data, error } = updateSchema.safeParse(req.body);
+        if (!success) {
+            const formatted = error.flatten().fieldErrors;
+            return res.status(400).json({
+                formatted
+            });
+        }
+        if (!data?.password && !data?.firstName && !data?.lastName) {
+            return res.status(400).json({
+                message: "Please enter a field to change"
+            });
+        }
+        const userId = new mongoose.Types.ObjectId(req.userId);
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                message: "User doesn't exists"
+            });
+        }
+        const hashedPassword = data.password ? await bcrypt.hash(data.password, 5) : undefined;
+        const response = await User.findByIdAndUpdate(userId, {
+            firstName: data.firstName,
+            password: hashedPassword,
+            lastName: data.lastName
+        }, { new: true, omitUndefined: true });
+        return res.status(200).json({
+            message: "User Updated Successfully",
+            response
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return res.json(400).json({
+            message: "Error While Updating User"
         });
     }
 });
