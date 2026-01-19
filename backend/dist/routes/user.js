@@ -158,6 +158,11 @@ userRouter.get("/bulk", async (req, res) => {
         let filterCriterion = req.query.filter || "";
         filterCriterion = filterCriterion && filterCriterion.toLowerCase();
         const users = await User.find({ $or: [{ firstName: { $regex: '.*' + filterCriterion + '.*' } }, { lastName: { $regex: '.*' + filterCriterion + '.*' } }] }, "username firstName lastName _id").exec();
+        if (users.length === 0) {
+            return res.status(404).json({
+                message: "User Not Found"
+            });
+        }
         return res.status(200).json({
             message: "Fetched Users Successfully",
             users: users
