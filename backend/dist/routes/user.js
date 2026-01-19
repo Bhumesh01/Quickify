@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import { User } from "../models/db.js";
-import z, { string } from "zod";
+import z, { string, toLowerCase } from "zod";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import authMiddleware from "../middleware/middleware.js";
@@ -149,6 +149,24 @@ userRouter.patch("/", async (req, res) => {
         console.log(err);
         return res.json(400).json({
             message: "Error While Updating User"
+        });
+    }
+});
+//Get users from the backend Endpoint
+userRouter.get("/bulk", async (req, res) => {
+    try {
+        let filterCriterion = req.query.filter || "";
+        filterCriterion = filterCriterion && filterCriterion.toLowerCase();
+        const users = await User.find({ $or: [{ firstName: { $regex: '.*' + filterCriterion + '.*' } }, { lastName: { $regex: '.*' + filterCriterion + '.*' } }] }, "username firstName lastName _id").exec();
+        return res.status(200).json({
+            message: "Fetched Users Successfully",
+            users: users
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(400).json({
+            message: "Error Fetching users"
         });
     }
 });
