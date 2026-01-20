@@ -50,7 +50,9 @@ accountRouter.get("/balance", async(req: CustomRequest, res: Response)=>{
 })
 
 accountRouter.post("/transfer", async (req:CustomRequest, res: Response)=>{
+    const session = await mongoose.startSession();
     try{
+        session.startTransaction();
         if(!req.userId){
             return res.status(400).json({
                 message: "Invalid Request"
@@ -63,29 +65,38 @@ accountRouter.post("/transfer", async (req:CustomRequest, res: Response)=>{
                 message: "Please provide the recepient and the amount"
             })
         }
+        if (data.to === req.userId) {
+            return res.status(400).json({ message: "Cannot transfer to self" });
+        }
         const receiverId = new mongoose.Types.ObjectId(data.to);
 
-        const sender = await Account.findOne({userId: senderId});
-        const receiver = await Account.findOne({userId: receiverId});
+        const sender = await Account.findOne({userId: senderId}).session(session);
+        const receiver = await Account.findOne({userId: receiverId}).session(session);
         if(!sender || !receiver){
+            await session.abortTransaction();
             return res.status(400).json({
                 message: "Invalid Account"
             })
         }
-        if(sender.balance < data.amount){
-            return res.status(400).json({
-                message: "Insufficient Balance"
-            })
+        if (data.amount <= 0 || !Number.isInteger(data.amount * 100)) {
+            return res.status(400).json({ message: "Invalid amount" });
         }
-        const b1 = (sender.balance/100) - data.amount;
-        const b2 = (sender.balance/100) - data.amount;
-        const debit = await Account.findByIdAndUpdate(sender._id, {$inc: {balance: -data.amount*100}});
-        const credit = await Account.findByIdAndUpdate(receiver._id, {$inc: {balance: data.amount*100}});
-        if(!debit || !credit){
+        const amountPaise = data.amount*100;
+        const debit = await Account.updateOne({_id: sender._id, balance: { $gte: amountPaise }}, {$inc: {balance: -amountPaise}}).session(session);
+        if(debit.modifiedCount !== 1){
+            await session.abortTransaction();
+            return res.status(400).json({
+              message: "Insufficient Balance"
+            });
+        }
+        const credit = await Account.updateOne({_id: receiver._id}, {$inc: {balance: amountPaise}}).session(session);
+        if(credit.modifiedCount !== 1){
+            await session.abortTransaction();
             return res.status(400).json({
                 message: "Transaction failed"
             });
         }
+        await session.commitTransaction();
         return res.status(200).json({
             message: "Transaction Successful"
         });
@@ -95,5 +106,8 @@ accountRouter.post("/transfer", async (req:CustomRequest, res: Response)=>{
         return res.status(500).json({
             message: "An Error Occurred! Transaction Failed!"
         })
+    }
+    finally{
+        session.endSession();
     }
 })
