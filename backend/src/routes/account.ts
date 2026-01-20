@@ -32,9 +32,13 @@ accountRouter.get("/balance", async(req: CustomRequest, res: Response)=>{
                 message: "User doesn't exists"
             })
         }
+        const formatter = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })
         return res.json({
             message: "Successfully Fetched Balance",
-            balance: response.balance
+            balance: formatter.format(response.balance/100)
         })
     }
     catch(err){
@@ -54,7 +58,7 @@ accountRouter.post("/transfer", async (req:CustomRequest, res: Response)=>{
         }
         const senderId = new mongoose.Types.ObjectId(req.userId);
         const data:TransferTypes = req.body;
-        if(!data.to || !data.amount){
+        if(data.to==null || data.amount===null){
             return res.status(400).json({
                 message: "Please provide the recepient and the amount"
             })
@@ -73,8 +77,10 @@ accountRouter.post("/transfer", async (req:CustomRequest, res: Response)=>{
                 message: "Insufficient Balance"
             })
         }
-        const debit = await Account.findByIdAndUpdate(senderId, {$inc: {balance: sender.balance - data.amount}});
-        const credit = await Account.findByIdAndUpdate(receiverId, {$inc: {balance: receiver.balance+data.amount}});
+        const b1 = (sender.balance/100) - data.amount;
+        const b2 = (sender.balance/100) - data.amount;
+        const debit = await Account.findByIdAndUpdate(sender._id, {$inc: {balance: -data.amount*100}});
+        const credit = await Account.findByIdAndUpdate(receiver._id, {$inc: {balance: data.amount*100}});
         if(!debit || !credit){
             return res.status(400).json({
                 message: "Transaction failed"
