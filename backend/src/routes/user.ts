@@ -74,7 +74,7 @@ userRouter.post("/signup", async (req:Request, res:Response)=>{
             firstName: firstName,
             lastName: lastName,
         })
-        const balance = 1 + Math.random()*10000;
+        const balance = Math.floor((1 + Math.random()*10000)*100);
         await Account.create({
             userId: response._id,
             balance: balance
