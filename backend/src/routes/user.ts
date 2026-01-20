@@ -1,8 +1,8 @@
 import { Router} from "express";
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { User } from "../models/db.js";
-import z, { string, toLowerCase } from "zod";
+import { User, Account } from "../models/db.js";
+import z from "zod";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import authMiddleware from "../middleware/middleware.js";
@@ -67,15 +67,21 @@ userRouter.post("/signup", async (req:Request, res:Response)=>{
         if(exists){
             return res.status(409).json({ message: "Email already taken/Incorrect inputs" });
         }
-        await User.create({
+        const response = await User.create({
             username: username,
             password: password,
             email: email,
             firstName: firstName,
             lastName: lastName,
         })
+        const balance = 1 + Math.random()*10000;
+        await Account.create({
+            userId: response._id,
+            balance: balance
+        })
         res.status(200).json({
-            message: "Successfully signed up"
+            message: "Successfully signed up",
+            balance: balance
         });
     }
     catch(err:any){
