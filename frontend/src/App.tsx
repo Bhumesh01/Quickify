@@ -1,25 +1,21 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import SignUp from "./pages/SignUp"
+import SignIn from "./pages/SignIn"
+import SendMoney from "./pages/SendMoney"
+import Dashboard from "./pages/Dashboard"
 function App() {
 
   return (
     <>
       <BrowserRouter>
           <Routes>
-            <Route path="/signup" element={<Test />}></Route>
-            <Route path="/signin" element={<Test />}></Route>
-            <Route path="/dashboard" element={<Test />}></Route>
-            <Route path="/send" element={<Test />}></Route>
+            <Route path="/signup" element={<SignUp />}></Route>
+            <Route path="/signin" element={<SignIn />}></Route>
+            <Route path="/dashboard" element={<Dashboard />}></Route>
+            <Route path="/send" element={<SendMoney />}></Route>
         </Routes>
       </BrowserRouter>
     </>
-  )
-}
-
-function Test(){
-  return(
-    <div>
-      "Hi"
-    </div>
   )
 }
 export default App
