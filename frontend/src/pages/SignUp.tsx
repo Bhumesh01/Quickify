@@ -13,6 +13,7 @@ interface SignUpError{
     lastNameErrors: string[],
 }
 export default function SignUp(){
+    const [loading, setLoading] = useState<boolean>(false);
     const [message, setMessage] =useState<string|null>(null);
     const [error, setErrors] =useState<SignUpError|null>(null);
     const userNameRef = useRef<HTMLInputElement>(null);
@@ -33,6 +34,7 @@ export default function SignUp(){
             setMessage("All Fields are Required!");
             return;
         }
+        setLoading(true);
         setErrors(null);
         setMessage("");
         try{
@@ -47,6 +49,7 @@ export default function SignUp(){
             setMessage(response.data.message);
             setTimeout(()=>{
                 setMessage("");
+                setLoading(false);
                 navigate("/signin");
             }, 1000);
         }
@@ -58,8 +61,10 @@ export default function SignUp(){
             }
             else{
                 setMessage("Error Signing Up");
+                setLoading(false);
                 console.error(err)
             }
+            setLoading(false);
         }
     }
     return(
@@ -78,7 +83,7 @@ export default function SignUp(){
                     <InputField ref={passwordRef} label="Password" type="text" placeholder="Enter your Password" errorMessage={error?.passwordErrors?.join(",")}></InputField>
                     <InputField ref={cnfPassRef} label="Confirm Password" type="text" placeholder="Enter your confirm password" errorMessage={error?.confirmedPasswordErrors?.join(",")}></InputField>
                 </div>
-                <Button text="Sign Up" onClick={submit}></Button>
+                <Button isLoading={loading} text="Sign Up" onClick={submit}></Button>
                 <p className="text-center">
                     Already have an account?
                     <span className="underline">{<Link to="/signin"> Login</Link>}</span>
