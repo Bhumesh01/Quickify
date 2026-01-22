@@ -4,8 +4,17 @@ import {InputField} from "../components/ui/InputField"
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+interface SignUpError{
+    usernameErrors: string[],
+    passwordErrors: string[],
+    confirmedPasswordErrors: string[],
+    emailErrors: string[],
+    firstNameErrors: string[],
+    lastNameErrors: string[],
+}
 export default function SignUp(){
     const [message, setMessage] =useState<string|null>(null);
+    const [error, setErrors] =useState<SignUpError|null>(null);
     const userNameRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
     const firstRef = useRef<HTMLInputElement>(null);
@@ -24,6 +33,8 @@ export default function SignUp(){
             setMessage("All Fields are Required!");
             return;
         }
+        setErrors(null);
+        setMessage("");
         try{
             const response = await axios.post("http://localhost:3000/api/v1/user/signup",{
                 username: username,
@@ -34,32 +45,41 @@ export default function SignUp(){
                 confirmedPassword: confirmPassword
             });
             setMessage(response.data.message);
-            if(response.status === 200){
+            setTimeout(()=>{
+                setMessage("");
                 navigate("/signin");
-            }
+            }, 1000);
         }
         catch(err){
-            setMessage("Error encountered" +  err);
+            if(axios.isAxiosError(err)){
+                console.error(err.response?.data)
+                setMessage(err.response?.data?.message);
+                setErrors(err.response?.data);
+            }
+            else{
+                setMessage("Error Signing Up");
+                console.error(err)
+            }
         }
     }
     return(
-        <div className="h-screen w-screen flex flex-col justify-center">
-            <div className="border flex flex-col justify-center items-center m-auto p-5 rounded-2xl gap-3">
+        <div className="border-3 pt-5 pb-5 min-h-screen w-screen flex flex-col justify-center items-center px-4">
+            <div className="w-full max-w-md border rounded-2xl p-6 flex flex-col gap-4">
                 {message&&(
-                    <div className="bg-[#535558] absolute md:top-20 top-10 opacity-80 text-white text-xl font-semibold p-2 rounded-2xl">{message}</div>
+                    <div className="bg-gray-500 opacity-80 text-white text-center p-2 rounded-lg">{message}</div>
                 )}
-                <h1 className="font-bold text-4xl">Sign Up</h1>
-                <h2 className="text-[#5a5656] text-center font-medium text-xl wrap-break-word">Enter your information to create an account</h2>
+                <h1 className="text-3xl font-bold text-center">Sign Up</h1>
+                <h2 className="text-gray-700 text-center font-medium text-xl">Enter your information to create an account</h2>
                 <div className="w-full">
-                    <InputField ref={userNameRef} label="Username" type="text" placeholder="Enter your username"></InputField>
-                    <InputField ref={emailRef} label="Email" type="text" placeholder="Enter your email id"></InputField>
-                    <InputField ref={firstRef} label="First Name" type="text" placeholder="Enter your  first name"></InputField>
-                    <InputField ref={lastRef} label="Last Name" type="text" placeholder="Enter your last name"></InputField>
-                    <InputField ref={passwordRef} label="Password" type="text" placeholder="Enter your Password"></InputField>
-                    <InputField ref={cnfPassRef} label="Confirm Password" type="text" placeholder="Enter your confirm password"></InputField>
+                    <InputField ref={userNameRef} label="Username" type="text" placeholder="Enter your username" errorMessage={error?.usernameErrors?.join(",")}></InputField>
+                    <InputField ref={emailRef} label="Email" type="text" placeholder="Enter your email id" errorMessage={error?.emailErrors?.join(",")}></InputField>
+                    <InputField ref={firstRef} label="First Name" type="text" placeholder="Enter your  first name" errorMessage={error?.firstNameErrors?.join(",")}></InputField>
+                    <InputField ref={lastRef} label="Last Name" type="text" placeholder="Enter your last name" errorMessage={error?.lastNameErrors?.join(",")}></InputField>
+                    <InputField ref={passwordRef} label="Password" type="text" placeholder="Enter your Password" errorMessage={error?.passwordErrors?.join(",")}></InputField>
+                    <InputField ref={cnfPassRef} label="Confirm Password" type="text" placeholder="Enter your confirm password" errorMessage={error?.confirmedPasswordErrors?.join(",")}></InputField>
                 </div>
                 <Button text="Sign Up" onClick={submit}></Button>
-                <p>
+                <p className="text-center">
                     Already have an account?
                     <span className="underline">{<Link to="/signin"> Login</Link>}</span>
                 </p>
