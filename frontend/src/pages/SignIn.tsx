@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import Button from "../components/ui/Button"
-import InputField from "../components/ui/InputField"
+import {InputField} from "../components/ui/InputField"
 export default function SignIn(){
     return(
         <div className="h-screen w-screen flex flex-col justify-center">
