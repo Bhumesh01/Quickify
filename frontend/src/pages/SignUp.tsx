@@ -51,17 +51,17 @@ export default function SignUp(){
                 lastName: lastName,
                 confirmedPassword: confirmPassword
             });
-            setMessage(response.data.message);
             setTimeout(()=>{
                 setMessage("");
                 setLoading(false);
+                setMessage(response.data.message);
                 navigate("/signin");
             }, 1000);
         }
         catch(err){
             if(axios.isAxiosError(err)){
                 console.error(err.response?.data)
-                setMessage("Validation Failed");
+                setMessage(err.response?.data?.message);
                 setErrors(err.response?.data);
             }
             else{
