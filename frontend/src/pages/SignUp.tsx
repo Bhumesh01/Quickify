@@ -34,6 +34,11 @@ export default function SignUp(){
             setMessage("All Fields are Required!");
             return;
         }
+        const isAlpha = /^[A-Za-z]+$/;
+        if(!isAlpha.test(firstName) || !isAlpha.test(lastName)){
+            setMessage("first and last name must be a valid string");
+            return;
+        }
         setLoading(true);
         setErrors(null);
         setMessage("");
@@ -56,7 +61,7 @@ export default function SignUp(){
         catch(err){
             if(axios.isAxiosError(err)){
                 console.error(err.response?.data)
-                setMessage(err.response?.data?.message);
+                setMessage("Validation Failed");
                 setErrors(err.response?.data);
             }
             else{
@@ -80,8 +85,8 @@ export default function SignUp(){
                     <InputField ref={emailRef} label="Email" type="text" placeholder="Enter your email id" errorMessage={error?.emailErrors?.join(",")}></InputField>
                     <InputField ref={firstRef} label="First Name" type="text" placeholder="Enter your  first name" errorMessage={error?.firstNameErrors?.join(",")}></InputField>
                     <InputField ref={lastRef} label="Last Name" type="text" placeholder="Enter your last name" errorMessage={error?.lastNameErrors?.join(",")}></InputField>
-                    <InputField ref={passwordRef} label="Password" type="text" placeholder="Enter your Password" errorMessage={error?.passwordErrors?.join(",")}></InputField>
-                    <InputField ref={cnfPassRef} label="Confirm Password" type="text" placeholder="Enter your confirm password" errorMessage={error?.confirmedPasswordErrors?.join(",")}></InputField>
+                    <InputField ref={passwordRef} label="Password" type="password" placeholder="Enter your Password" errorMessage={error?.passwordErrors?.join(",")}></InputField>
+                    <InputField ref={cnfPassRef} label="Confirm Password" type="password" placeholder="Enter your confirm password" errorMessage={error?.confirmedPasswordErrors?.join(",")}></InputField>
                 </div>
                 <Button isLoading={loading} text="Sign Up" onClick={submit}></Button>
                 <p className="text-center">
