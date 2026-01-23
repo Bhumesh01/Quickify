@@ -97,7 +97,7 @@ userRouter.post("/signin", async(req:Request, res:Response)=>{
             const formatted = error.flatten().fieldErrors;
             return res.status(400).json(formatted);
         }
-        const user = await User.findOne({$or: [{username: data.username}, {email: data.email}]});
+        const user = await User.findOne({$and: [{username: data.username}, {email: data.email}]});
         if(!user){
             return res.status(404).json({
                 message: "User does not exists",
