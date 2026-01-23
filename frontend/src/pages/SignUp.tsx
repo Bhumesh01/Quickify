@@ -52,9 +52,8 @@ export default function SignUp(){
                 confirmedPassword: confirmPassword
             });
             setTimeout(()=>{
-                setMessage("");
-                setLoading(false);
                 setMessage(response.data.message);
+                setLoading(false);
                 navigate("/signin");
             }, 1000);
         }

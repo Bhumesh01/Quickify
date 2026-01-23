@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme{
+    --breakpoint-lp: 460px;
     --animate-spin: spin 1s linear infinite; /* spin 1s linear infinite */
     @keyframes spin {
     to {
