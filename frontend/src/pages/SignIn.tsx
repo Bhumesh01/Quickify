@@ -36,6 +36,7 @@ export default function SignIn(){
             });
             setMessage(response.data.message);
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("name", username);
             setTimeout(()=>{
                 setMessage("");
                 setLoading(false);
