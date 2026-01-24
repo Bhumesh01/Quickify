@@ -2,7 +2,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import Button from "./Button";
 import { InputField } from "./InputField";
 
-interface User{
+interface ModalType{
     _id: string,
     username: string;
     firstName: string;
@@ -11,8 +11,8 @@ interface User{
     setModal: Dispatch<SetStateAction<boolean>>
 }
 
-export const Modal = (props:User)=>{
-    const [loading, isLoading] = useState<boolean>(false);
+export const Modal = (props:ModalType)=>{
+    const [loading, setLoading] = useState<boolean>(false);
     function toTitleCase(str:string) {
         return str
           .toLowerCase()
@@ -22,8 +22,8 @@ export const Modal = (props:User)=>{
     }
     return(
         <div>
-            {props.modal&&<div className="border absolute px-5 py-5 bg-gray-50 flex justify-center flex-col items-center m-auto inset-0 z-50">
-                <div className="bg-red shadow-[#4d5850] shadow-2xl px-10 py-5 rounded-2xl flex justify-center items-center flex-col">
+            {props.modal&&<div className="absolute inset-0 z-50 bg-black/40 flex justify-center items-center px-3">
+                <div className="bg-gray-50 shadow-2xl rounded-2xl w-full max-w-md p-5 sm:p-8">
                     <div onClick={()=>props.setModal((prev)=>(!prev))} className="flex justify-end items-end ml-auto relative w-full top-0 right-0">
                         <div className=" hover:bg-red-600 rounded-2xl p-2">
                             ❌
@@ -38,7 +38,7 @@ export const Modal = (props:User)=>{
                         <InputField type="text" placeholder="Enter amount" label="Amount (in Rs)"></InputField>
                     </div>
                     <div className="mb-5">
-                        <Button text="Initiate Transfer" isLoading={loading}></Button>
+                        <Button text="Initiate Transfer" onClick={()=>{setLoading(true)}} isLoading={loading}></Button>
                     </div>
                 </div>
             </div>}
