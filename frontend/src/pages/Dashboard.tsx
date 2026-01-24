@@ -74,7 +74,9 @@ function Card(props:CardType){
     return(
         <div className="flex w-full p-2 justify-between lp:flex-row lp:items-center flex-col gap-2">
             <div className="flex justify-start gap-5 flex-wrap">
-                {openModal&&<Modal modal={openModal} setModal={setOpenModal} _id={props._id} firstName={props.firstName} lastName={props.lastName} username={props.username}></Modal>}
+                <div>
+                    {openModal&&<Modal modal={openModal} setModal={setOpenModal} _id={props._id} firstName={props.firstName} lastName={props.lastName} username={props.username}></Modal>}
+                </div>
                 <div className="h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer">
                     {props.firstName.charAt(0).toUpperCase()}
                 </div>

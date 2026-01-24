@@ -25,7 +25,7 @@ export const Modal = (props:ModalType)=>{
             {props.modal&&<div className="absolute inset-0 z-50 bg-black/40 flex justify-center items-center px-3">
                 <div className="bg-gray-50 shadow-2xl rounded-2xl w-full max-w-md p-5 sm:p-8">
                     <div onClick={()=>props.setModal((prev)=>(!prev))} className="flex justify-end items-end ml-auto relative w-full top-0 right-0">
-                        <div className=" hover:bg-red-600 rounded-2xl p-2">
+                        <div className=" hover:bg-red-600 rounded-2xl p-2 cursor-pointer">
                             ❌
                         </div>
                     </div>
