@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { InputField } from "../components/ui/InputField";
 import Button from "../components/ui/Button";
+import { Modal } from "../components/ui/Modal";
 interface User{
     _id: string,
     username: string;
@@ -59,6 +60,10 @@ interface CardType extends User{
     loading: boolean
 }
 function Card(props:CardType){
+    const [openModal, setOpenModal] = useState<boolean>(false);
+    async function sendMoney(){
+        setOpenModal(true);
+    }
     function toTitleCase(str:string) {
         return str
           .toLowerCase()
@@ -69,6 +74,7 @@ function Card(props:CardType){
     return(
         <div className="flex w-full p-2 justify-between lp:flex-row lp:items-center flex-col gap-2">
             <div className="flex justify-start gap-5 flex-wrap">
+                {openModal&&<Modal modal={openModal} setModal={setOpenModal} _id={props._id} firstName={props.firstName} lastName={props.lastName} username={props.username}></Modal>}
                 <div className="h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer">
                     {props.firstName.charAt(0).toUpperCase()}
                 </div>
@@ -77,7 +83,7 @@ function Card(props:CardType){
                 </div>
             </div>
             <div className="w-auto">
-                <Button  text="Send Money" isLoading={props.loading}></Button>
+                <Button onClick={sendMoney} text="Send Money" isLoading={props.loading}></Button>
             </div>
         </div>
     )
