@@ -1,6 +1,6 @@
 import NavBar from "../components/NavBar";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { InputField } from "../components/ui/InputField";
 import Button from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
@@ -11,7 +11,7 @@ interface User{
     lastName: string;
 }
 export default function Dashboard(){
-    const [balance, setBalance] = useState<number|null>(null);
+    const [balance, setBalance] = useState<number>(0);
     const [users, setUsers] = useState<User[]>([]);
     const [message, setMessage] = useState<string|null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -49,7 +49,7 @@ export default function Dashboard(){
                 <InputField type="text" placeholder="Search users..." label="Users"></InputField>
                 {users.map((user)=>{
                     return(
-                        <Card key={user._id} username={user.username} _id={user._id} loading={loading} firstName={user.firstName} lastName={user.lastName}></Card>
+                        <Card balance={balance} setBalance={setBalance} key={user._id} username={user.username} _id={user._id} loading={loading} firstName={user.firstName} lastName={user.lastName}></Card>
                     )
                 })}
             </div>
@@ -57,7 +57,9 @@ export default function Dashboard(){
     )
 }
 interface CardType extends User{
-    loading: boolean
+    loading: boolean,
+    balance: number,
+    setBalance: Dispatch<SetStateAction<number>>
 }
 function Card(props:CardType){
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -75,7 +77,7 @@ function Card(props:CardType){
         <div className="flex w-full p-2 justify-between lp:flex-row lp:items-center flex-col gap-2">
             <div className="flex justify-start gap-5 flex-wrap">
                 <div>
-                    {openModal&&<Modal modal={openModal} setModal={setOpenModal} _id={props._id} firstName={props.firstName} lastName={props.lastName} username={props.username}></Modal>}
+                    {openModal&&<Modal balance={props.balance} setBalance={props.setBalance} modal={openModal} setModal={setOpenModal} _id={props._id} firstName={props.firstName} lastName={props.lastName} username={props.username}></Modal>}
                 </div>
                 <div className="h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer">
                     {props.firstName.charAt(0).toUpperCase()}
