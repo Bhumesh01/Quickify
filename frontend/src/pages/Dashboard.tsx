@@ -1,7 +1,6 @@
 import NavBar from "../components/NavBar";
-import axios from "axios";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { InputField } from "../components/ui/InputField";
+import axios, { isAxiosError } from "axios";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import Button from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 interface User{
@@ -11,6 +10,7 @@ interface User{
     lastName: string;
 }
 export default function Dashboard(){
+    const searchRef = useRef<HTMLInputElement>(null);
     const [balance, setBalance] = useState<number>(0);
     const [users, setUsers] = useState<User[]>([]);
     const [message, setMessage] = useState<string|null>(null);
@@ -38,15 +38,52 @@ export default function Dashboard(){
         });
         setLoading(false);
     }, []);
+    async function SearchUser(event: React.ChangeEvent<HTMLInputElement>) {
+        try{
+            const filter = event.target.value;
+            const response = await axios.get("http://localhost:3000/api/v1/user/bulk", {
+                params: {
+                    filter: filter
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+            if (response.data.users.length === 0) {
+                setMessage("No users found");
+            }
+            else{
+                setMessage(null);
+            }
+            setUsers(response.data.users);
+        }
+        catch(err){
+            if(isAxiosError(err)){
+                if(err?.status === 404){
+                    setMessage("User not found");
+                    return;
+                }
+                console.log(err.response?.data)
+                setMessage(err.response?.data.message);
+            }
+        }
+    }
     return(
         <div className="flex flex-col gap-5 justify-center">
             <NavBar></NavBar>
-            {message&&<div className="bg-gray-500 opacity-80 text-white text-center p-2 rounded-lg">{message}</div>}
+            {message&&<div className="m-auto bg-gray-500 opacity-80 text-white text-center p-2 rounded-lg">{message}</div>}
             <div className="mx-5 text-2xl font-bold">
                 <h1>Your balance is ${balance}</h1>
             </div>
             <div className="mx-5 flex justify-center flex-col gap-5">
-                <InputField type="text" placeholder="Search users..." label="Users"></InputField>
+                <div className="flex flex-row justify-between">
+                    <div className="w-full">
+                        <h1 className="font-semibold text-xl mb-1">Users</h1>
+                        <input ref={searchRef} className={`w-full rounded-md p-2 border border-black`} onChange={(e)=>{
+                            SearchUser(e);
+                        }} type="text" placeholder="Search users..." />
+                    </div>
+                </div>
                 {users.map((user)=>{
                     return(
                         <Card balance={balance} setBalance={setBalance} key={user._id} username={user.username} _id={user._id} loading={loading} firstName={user.firstName} lastName={user.lastName}></Card>
