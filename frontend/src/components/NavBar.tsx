@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
+  const navigate = useNavigate();
   const [name, setName] = useState("User");
 
   useEffect(() => {
@@ -14,7 +16,7 @@ export default function NavBar() {
 
       <div className="flex gap-5 items-center text-xl">
         <h2>Hello, {name}</h2>
-        <div className="h-8 w-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer">
+        <div className="h-8 w-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer" onClick={()=>navigate("/details")}>
           {name.charAt(0).toUpperCase()}
         </div>
       </div>
