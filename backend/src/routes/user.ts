@@ -29,7 +29,20 @@ const signupSchema = baseZodSchema.superRefine((data, ctx)=>{
     }
 });
 const signinSchema = baseZodSchema.omit({confirmedPassword: true, lastName: true, firstName: true});
-const updateSchema = baseZodSchema.partial();
+const updateSchema = z.object({
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
+  password: z
+    .string()
+    .min(8)
+    .max(20)
+    .refine(val => /[A-Z]/.test(val))
+    .refine(val => /[a-z]/.test(val))
+    .refine(val => /[0-9]/.test(val))
+    .refine(val => /[^A-Za-z0-9]/.test(val))
+    .optional(),
+});
+
 //SignUp Endpoint
 userRouter.post("/signup", async (req:Request, res:Response)=>{
     try{
@@ -163,7 +176,7 @@ userRouter.patch("/", async (req: CustomRequest, res: Response)=>{
     }
     catch(err){
         console.log(err);
-        return res.json(400).json({
+        return res.status(400).json({
             message: "Error While Updating User"
         })
     }
