@@ -1,4 +1,4 @@
-import NavBar from "../components/NavBar";
+import NavBar from "../components/ui/NavBar";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import Button from "../components/ui/Button";
