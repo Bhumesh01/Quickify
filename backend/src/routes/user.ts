@@ -187,3 +187,21 @@ userRouter.get("/bulk", async(req:Request, res: Response)=>{
         })
     }
 })
+
+//Get User Details
+userRouter.get("/", async(req:CustomRequest, res: Response)=>{
+    try{
+        const userId = req.userId;
+        const user = await User.findById(userId);
+        return res.status(200).json({
+            message:"Users fetched successfully",
+            users: user
+        })
+    }
+    catch(err){
+        console.log(err);
+        return res.status(400).json({
+            message: "Error Fetching user"
+        })
+    }
+})
