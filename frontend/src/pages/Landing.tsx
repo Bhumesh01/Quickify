@@ -1,8 +1,9 @@
-import Button from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export function LandingPage() {
+    const navigate = useNavigate();
   return (
-    <div className="h-screen w-screen bg-neutral-900">
+    <div className="h-screen w-screen">
       <div className="flex h-full flex-col items-center justify-center gap-6 px-6">
         
         {/* Brand Card */}
@@ -10,15 +11,15 @@ export function LandingPage() {
           <h1 className="text-7xl sm:text-9xl font-extrabold tracking-wide text-white">
             QUICKIFY
           </h1>
-          <p className="text-sm text-neutral-400 tracking-wide">
+          <p className="text-md font-medium text-neutral-400 tracking-wide">
             Pay in a blink
           </p>
         </div>
 
         {/* Actions */}
         <div className="flex gap-5">
-          <Button text="Sign Up" isLoading={false} />
-          <Button text="Log In" isLoading={false} />
+          <button className="bg-black text-2xl px-6 py-2 text-white font-medium rounded-2xl hover:bg-black/75" onClick={()=>navigate("/signin")}>Sign In</button>
+          <button className="bg-black text-2xl px-6 py-2 text-white font-medium rounded-2xl hover:bg-black/75" onClick={()=>navigate("/signup")}>Sign Up</button>
         </div>
       </div>
     </div>
