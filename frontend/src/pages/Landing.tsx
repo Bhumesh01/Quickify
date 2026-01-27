@@ -1,12 +1,25 @@
-import React from "react";
- 
+import Button from "../components/ui/Button";
+
 export function LandingPage() {
   return (
-    <div>
-      <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
-        <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b from-white/80 to-white/20">
-          Gradients X Animations
-        </p>
+    <div className="h-screen w-screen bg-neutral-900">
+      <div className="flex h-full flex-col items-center justify-center gap-6 px-6">
+        
+        {/* Brand Card */}
+        <div className="flex flex-col items-center gap-2 rounded-2xl bg-black px-10 py-8 shadow-xl">
+          <h1 className="text-7xl sm:text-9xl font-extrabold tracking-wide text-white">
+            QUICKIFY
+          </h1>
+          <p className="text-sm text-neutral-400 tracking-wide">
+            Pay in a blink
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-5">
+          <Button text="Sign Up" isLoading={false} />
+          <Button text="Log In" isLoading={false} />
+        </div>
       </div>
     </div>
   );
